@@ -1,0 +1,33 @@
+/*Dark: #00031F Semi-dark: #10196B Light: #4757E6 Extra-light: #5E6CE6 Vibrant: #0218E0 Middle: #0213AD Text: #FFFFFF*/
+
+body {
+    background-color: #00031F;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.Taskbar {
+    background-color: #4757E6;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.TaskbarItem {
+    height: 100%;
+    width: 25%;
+    border: 1px solid #10196B; /* Debug */
+}
+
+.NeuralNetContainer {
+    
+}
+
+.NeuralNetCanvas {
+    /*border: 1px solid #10196B;*/
+    margin:auto;
+}
