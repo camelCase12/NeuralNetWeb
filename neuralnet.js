@@ -51,7 +51,22 @@ class Layer {
     }
 }
 
+// ----------------------------------------------------------Input
+function mouseMove(e) {
+    /*canvas = document.getElementById("NeuralNetCanvas");
+    if(e.clientX > 500) {
+        canvas.style.cursor = 'pointer';
+    }*/
+}
+
 // ----------------------------------------------------------Rendering
+function update() {
+
+    
+
+    window.requestAnimationFrame(update);
+}
+
 function renderNetwork() {
     canvas = document.getElementById("NeuralNetCanvas");
     width = canvas.width;
@@ -68,27 +83,41 @@ function renderNetwork() {
 }
 
 function renderEmptyNetwork() { //canvas, width, height) {
-    console.log("done");
+    // Get necessary data
     canvas = document.getElementById("NeuralNetCanvas");
+    boundingRect = document.getElementById("NeuralNetContainer").getBoundingClientRect();
+    canvas.width = boundingRect.width;
+    canvas.height = boundingRect.height;
     width = canvas.width;
     height = canvas.height;
-    console.log(width);
+    // Compute data into required info
     context = canvas.getContext('2d');
     radius = width / 20;
     x1 = width / 2 - radius*1.5;
     x2 = width / 2 + radius*1.5;
     y = height / 2;
-    for(angle = 0; angle < Math.PI*2; angle += 0.2) {
+    context.strokeStyle = '#5E6CE6';
+    context.lineWidth = 1;
+    // Draw dotted circles
+    for(angle = 0; angle < Math.PI*2; angle += 0.175) {
         context.beginPath();
-        context.arc(x1, y,radius, angle, angle+0.1);
+        context.arc(x1, y, radius, angle, angle+0.1);
         context.closePath();
-        context.fill();
+        context.stroke();
     }
-    for(angle = 0; angle < Math.PI*2; angle++) {
+    for(angle = 0; angle < Math.PI*2; angle += 0.175) {
         context.beginPath();
-        context.arc(x2, y,radius, angle, angle+0.1);
+        context.arc(x2, y, radius, angle, angle+0.1);
         context.closePath();
-        context.fill();
+        context.stroke();
     }
-    
+    // Draw plus sign over first circle
+    context.beginPath();
+    context.moveTo(x1, y-radius/2);
+    context.lineTo(x1, y+radius/2);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(x1-radius/2, y);
+    context.lineTo(x1+radius/2, y);
+    context.stroke();
 }

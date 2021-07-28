@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="netstyles.css">
         <script src="neuralnet.js"></script>
     </head>
-    <body onload="renderEmptyNetwork();">
+    <body onload="renderEmptyNetwork(); update();">
         <div class="Taskbar">
             <div class="TaskbarItem">
                 
@@ -20,8 +20,8 @@
                 
             </div>
         </div>
-        <div class="NeuralNetContainer">
-            <canvas id="NeuralNetCanvas" class="NeuralNetCanvas">
+        <div id="NeuralNetContainer" class="NeuralNetContainer">
+            <canvas id="NeuralNetCanvas" class="NeuralNetCanvas" onmousemove="mouseMove(event)">
 
             </canvas>
         </div>
