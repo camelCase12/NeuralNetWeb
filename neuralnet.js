@@ -53,17 +53,32 @@ class Layer {
 
 // ----------------------------------------------------------Input
 function mouseMove(e) {
-    /*canvas = document.getElementById("NeuralNetCanvas");
-    if(e.clientX > 500) {
+    canvas = document.getElementById("NeuralNetCanvas");
+    /*if(e.clientX > 500) {
         canvas.style.cursor = 'pointer';
     }*/
+    rect = document.getElementById("NeuralNetCanvas").getBoundingClientRect();
+    canvasX = e.clientX - window.scrollX - rect.x;
+    canvasY = e.clientY - window.scrollY - rect.y;
+    x1 = width / 2 - radius*1.5;
+    x2 = width / 2 + radius*1.5;
+    y = height / 2;
+    radius = document.getElementById("NeuralNetCanvas").width / 20;
+    if((canvasX - x1) * (canvasX - x1) + (canvasY - y) * (canvasY - y) < radius*radius) {
+        canvas.style.cursor = 'pointer';
+    }
+    else {
+        canvas.style.cursor = 'initial';
+    }
 }
 
 // ----------------------------------------------------------Rendering
 function update() {
-
-    
-
+    canvas = document.getElementById("NeuralNetCanvas");
+    context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    renderEmptyNetwork();
+    console.log("h");
     window.requestAnimationFrame(update);
 }
 
@@ -82,6 +97,8 @@ function renderNetwork() {
     }
 }
 
+var progress = 0;
+
 function renderEmptyNetwork() { //canvas, width, height) {
     // Get necessary data
     canvas = document.getElementById("NeuralNetCanvas");
@@ -96,19 +113,24 @@ function renderEmptyNetwork() { //canvas, width, height) {
     x1 = width / 2 - radius*1.5;
     x2 = width / 2 + radius*1.5;
     y = height / 2;
-    context.strokeStyle = '#5E6CE6';
+    context.strokeStyle = '#6978ff';
     context.lineWidth = 1;
     // Draw dotted circles
+
+    context.beginPath();
+    context.arc(x1, y, radius, 0, progress);
+    context.stroke();
+
     for(angle = 0; angle < Math.PI*2; angle += 0.175) {
+        if (angle + 0.1 > progress) {
         context.beginPath();
         context.arc(x1, y, radius, angle, angle+0.1);
-        context.closePath();
         context.stroke();
+        }
     }
     for(angle = 0; angle < Math.PI*2; angle += 0.175) {
         context.beginPath();
         context.arc(x2, y, radius, angle, angle+0.1);
-        context.closePath();
         context.stroke();
     }
     // Draw plus sign over first circle
@@ -120,4 +142,20 @@ function renderEmptyNetwork() { //canvas, width, height) {
     context.moveTo(x1-radius/2, y);
     context.lineTo(x1+radius/2, y);
     context.stroke();
+
+    context.strokeStyle = '#6978ff';
+
+    context.beginPath();
+    context.moveTo(x1 + radius*1.1, y);
+    context.lineTo(x2 - radius*1.1, y);
+    context.stroke();
+    if(canvas.style.cursor == 'pointer') {
+        if(progress <= Math.PI*2) progress += 0.2;
+    }
+    else {
+        if(progress > 0.2) progress -= 0.2;
+        else {
+            progress = 0;
+        }
+    }
 }
