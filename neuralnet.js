@@ -143,12 +143,14 @@ function renderEmptyNetwork() { //canvas, width, height) {
     context.lineTo(x1+radius/2, y);
     context.stroke();
 
+    //Draw axon
     context.strokeStyle = '#6978ff';
-
     context.beginPath();
     context.moveTo(x1 + radius*1.1, y);
     context.lineTo(x2 - radius*1.1, y);
     context.stroke();
+
+    //Control demo animation--crude method
     if(canvas.style.cursor == 'pointer') {
         if(progress <= Math.PI*2) progress += 0.2;
     }
