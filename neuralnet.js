@@ -57,7 +57,7 @@ class Layer {
     axonWeights; // matrix - row connects an output to each input in the next layer
     
     constructor() {
-        this.size = Math.floor(Math.random()*5+2);
+        this.size = Math.floor(Math.random()*9+2);
         this.inputs = [0, 0, 0];
         this.outputs = [0, 0, 0];
         this.activationFunctions = [(input) => {return 1 / (1 + Math.exp(-input))}];
@@ -148,7 +148,7 @@ function renderNetwork() {
     marginY = GlobalVariables.marginY*height;
     incrementX = (width - marginX)/(GlobalVariables.mainNetwork.layerCount+1);
     
-    context.strokeStyle = '#6978ff';
+    context.strokeStyle = '#4757E6';
     for(var i = 0; i < GlobalVariables.mainNetwork.layerCount; i++) {
         incrementY = (height - marginY)/(GlobalVariables.mainNetwork.layers[i].size+1);
         for(var j = 0; j < GlobalVariables.mainNetwork.layers[i].size; j++) {
@@ -179,7 +179,7 @@ function renderNetwork() {
                 }
                 context.beginPath();
                 context.moveTo(neuronX1+radius, neuronY1);
-                context.bezierCurveTo(neuronX2 - radius*4, neuronY1, neuronX1 + radius*4, neuronY2, neuronX2-radius, neuronY2);
+                context.bezierCurveTo((neuronX2 + neuronX1)/2, neuronY1, (neuronX1 + neuronX2)/2, neuronY2, neuronX2-radius, neuronY2);
                 context.stroke();
             }
         }
