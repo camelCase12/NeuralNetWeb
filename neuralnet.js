@@ -1,3 +1,10 @@
+class GlobalVariables {
+    static renderEmpty = true;
+    static marginX = 0;
+    static marginY = 0;
+    static neuronRadius = 0.02;
+    static mainNetwork;
+}
 
 class Network {
     layerCount;
@@ -19,7 +26,9 @@ class Network {
 
     }
     constructor() {
-        this.layerCount = 0;
+        this.layerCount = 6;
+        this.lossFunction = (actual, theoretical) => {return 0.5 * (actual - theoretical) * (actual - theoretical)};
+        this.layers = [new Layer(), new Layer(), new Layer(), new Layer(), new Layer(), new Layer()];
     }
 }
 
@@ -44,6 +53,15 @@ class Layer {
     positions;
     axonWeights; // matrix - row connects an output to each input in the next layer
     
+    constructor() {
+        this.size = 3;
+        this.inputs = [0, 0, 0];
+        this.outputs = [0, 0, 0];
+        this.activationFunctions = [(input) => {return 1 / (1 + Math.exp(-input))}];
+        this.differentationFunctions = [(output) => {return output * (1 - output)}];
+        this.positions = [];
+        this.axonWeights = [[1, 0, -1], [0, -1, 1], [-1, 1, 0]];
+    }
     activate() {
         for(var i = 0; i < this.size; i++) {
             outputs[i] = activationFunctions[i](inputs[i]);
@@ -60,25 +78,53 @@ function mouseMove(e) {
     rect = document.getElementById("NeuralNetCanvas").getBoundingClientRect();
     canvasX = e.clientX - window.scrollX - rect.x;
     canvasY = e.clientY - window.scrollY - rect.y;
-    x1 = width / 2 - radius*1.5;
-    x2 = width / 2 + radius*1.5;
+    x1 = canvas.width / 2 - radius*1.5;
+    x2 = canvas.width / 2 + radius*1.5;
+    y = height / 2;
+    radius = document.getElementById("NeuralNetCanvas").width / 20;
+    if(GlobalVariables.renderEmpty) {
+        if((canvasX - x1) * (canvasX - x1) + (canvasY - y) * (canvasY - y) < radius*radius) {
+            canvas.style.cursor = 'pointer';
+        }
+        else {
+            canvas.style.cursor = 'initial';
+        }
+    }
+}
+
+function mouseClick(e) {
+    canvas = document.getElementById("NeuralNetCanvas");
+    rect = document.getElementById("NeuralNetCanvas").getBoundingClientRect();
+    canvasX = e.clientX - window.scrollX - rect.x;
+    canvasY = e.clientY - window.scrollY - rect.y;
+    x1 = canvas.width / 2 - radius*1.5;
+    x2 = canvas.width / 2 + radius*1.5;
     y = height / 2;
     radius = document.getElementById("NeuralNetCanvas").width / 20;
     if((canvasX - x1) * (canvasX - x1) + (canvasY - y) * (canvasY - y) < radius*radius) {
-        canvas.style.cursor = 'pointer';
+        GlobalVariables.renderEmpty = false;
+        canvas.style.cursor = 'initial';
+        GlobalVariables.mainNetwork = new Network();
     }
     else {
-        canvas.style.cursor = 'initial';
+        //bruh
     }
 }
 
 // ----------------------------------------------------------Rendering
 function update() {
+    //Params and setup
     canvas = document.getElementById("NeuralNetCanvas");
     context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
-    renderEmptyNetwork();
-    console.log("h");
+
+    //Call rendering function
+    if(GlobalVariables.renderEmpty) {
+        renderEmptyNetwork();
+    }
+    else {
+        renderNetwork();
+    }
     window.requestAnimationFrame(update);
 }
 
@@ -86,14 +132,46 @@ function renderNetwork() {
     canvas = document.getElementById("NeuralNetCanvas");
     width = canvas.width;
     height = canvas.height;
-    if(true) {
-        renderEmptyNetwork(canvas, width, height);
-    }
-    if(layerCount = 1) {
 
+    radius = GlobalVariables.neuronRadius*width;
+    marginX = GlobalVariables.marginX*width;
+    marginY = GlobalVariables.marginY*height;
+    incrementX = (width - marginX)/(GlobalVariables.mainNetwork.layerCount+1);
+    
+    context.strokeStyle = '#6978ff';
+    for(var i = 0; i < GlobalVariables.mainNetwork.layerCount; i++) {
+        incrementY = (height - marginY)/(GlobalVariables.mainNetwork.layers[i].size+1);
+        for(var j = 0; j < GlobalVariables.mainNetwork.layers[i].size; j++) {
+            context.beginPath();
+            context.arc(marginX/2 + incrementX*(i+1), marginY/2 + incrementY*(j+1), radius, 0, Math.PI*2);
+            context.stroke();
+        }
     }
-    else {
-
+    for(var i = 0; i < GlobalVariables.mainNetwork.layerCount-1; i++) {
+        incrementY = (height - marginY)/(GlobalVariables.mainNetwork.layers[i].size+1);
+        for(var j = 0; j < GlobalVariables.mainNetwork.layers[i].size; j++) {
+            for(var k = 0; k < GlobalVariables.mainNetwork.layers[i+1].size; k++) {
+                var neuronX1 = marginX/2 + incrementX*(i+1);
+                var neuronY1 = marginY/2 + incrementY*(j+1);
+                var neuronX2 = marginX/2 + incrementX*(i+2);
+                var neuronY2 = marginY/2 + incrementY*(k+1);
+                //-=------=-=-=---==-=-=-=-=-=-=-=-=-=-=-=-=--=Calculate color according to axon weight
+                //#ffb269 negative, #6978ff positive
+                if(GlobalVariables.mainNetwork.layers[i].axonWeights[k][j] > 0) {
+                    context.strokeStyle = '#6978ff';
+                }
+                else if (GlobalVariables.mainNetwork.layers[i].axonWeights[k][j] < 0) {
+                    context.strokeStyle = '#ffb269';
+                }
+                else {
+                    context.strokeStyle = '#ffffff';
+                }
+                context.beginPath();
+                context.moveTo(neuronX1+radius, neuronY1);
+                context.bezierCurveTo(neuronX2 - radius*4, neuronY1, neuronX1 + radius*4, neuronY2, neuronX2-radius, neuronY2);
+                context.stroke();
+            }
+        }
     }
 }
 
