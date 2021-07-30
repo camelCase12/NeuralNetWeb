@@ -26,9 +26,12 @@ class Network {
 
     }
     constructor() {
-        this.layerCount = 6;
+        this.layerCount = Math.floor(Math.random()*7+2);
         this.lossFunction = (actual, theoretical) => {return 0.5 * (actual - theoretical) * (actual - theoretical)};
-        this.layers = [new Layer(), new Layer(), new Layer(), new Layer(), new Layer(), new Layer()];
+        this.layers=[];
+        for(var i = 0; i < this.layerCount; i++) {
+            this.layers.push(new Layer());
+        }
     }
 }
 
@@ -54,13 +57,20 @@ class Layer {
     axonWeights; // matrix - row connects an output to each input in the next layer
     
     constructor() {
-        this.size = 3;
+        this.size = Math.floor(Math.random()*5+2);
         this.inputs = [0, 0, 0];
         this.outputs = [0, 0, 0];
         this.activationFunctions = [(input) => {return 1 / (1 + Math.exp(-input))}];
         this.differentationFunctions = [(output) => {return output * (1 - output)}];
         this.positions = [];
-        this.axonWeights = [[1, 0, -1], [0, -1, 1], [-1, 1, 0]];
+        this.axonWeights = [];
+        for(var i = 0; i < 15; i++) {
+            let array = [];
+            for(var j = 0; j < 15; j++) {
+                array.push(Math.random()*3-1.5);
+            }
+            this.axonWeights.push(array);
+        }
     }
     activate() {
         for(var i = 0; i < this.size; i++) {
@@ -154,13 +164,14 @@ function renderNetwork() {
                 var neuronX1 = marginX/2 + incrementX*(i+1);
                 var neuronY1 = marginY/2 + incrementY*(j+1);
                 var neuronX2 = marginX/2 + incrementX*(i+2);
-                var neuronY2 = marginY/2 + incrementY*(k+1);
+                var neuronY2 = marginY/2 + ((height - marginY)/(GlobalVariables.mainNetwork.layers[i+1].size+1))*(k+1);
                 //-=------=-=-=---==-=-=-=-=-=-=-=-=-=-=-=-=--=Calculate color according to axon weight
                 //#ffb269 negative, #6978ff positive
-                if(GlobalVariables.mainNetwork.layers[i].axonWeights[k][j] > 0) {
+                
+                if(GlobalVariables.mainNetwork.layers[i].axonWeights[j][k] > 0) {
                     context.strokeStyle = '#6978ff';
                 }
-                else if (GlobalVariables.mainNetwork.layers[i].axonWeights[k][j] < 0) {
+                else if (GlobalVariables.mainNetwork.layers[i].axonWeights[j][k] < 0) {
                     context.strokeStyle = '#ffb269';
                 }
                 else {
